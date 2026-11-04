@@ -3,12 +3,16 @@ import json
 import logging
 import sys
 import time
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
+
+from openai import OpenAI
 
 from kb.config import LOG_LEVEL, OUTPUT_DIR, Settings
 from kb.document import Document, build_document
 from kb.scraper import fetch_articles
+from kb.sync import apply_plan, find_or_create_store, load_remote_state, plan_sync
 
 log = logging.getLogger("bot")
 
@@ -43,10 +47,32 @@ def run(settings: Settings, limit: int, scrape_only: bool) -> dict:
     if scrape_only:
         log.info("--scrape-only: skipping the vector store upload")
     else:
-        raise SystemExit("vector store upload is not implemented yet; run with --scrape-only")
+        summary.update(sync(settings, docs, complete_scrape=limit == 0))
 
     summary["duration_s"] = round(time.monotonic() - started, 1)
     return summary
+
+
+def sync(settings: Settings, docs: list[Document], complete_scrape: bool) -> dict:
+    if not settings.api_key:
+        raise SystemExit("API_KEY is not set (see .env.sample), or run with --scrape-only")
+
+    client = OpenAI(api_key=settings.api_key)
+    store_id = find_or_create_store(client, settings.vector_store_name)
+    remote = load_remote_state(client, store_id)
+    plan = plan_sync(docs, remote, complete_scrape=complete_scrape)
+    log.info(
+        "plan: %d to add, %d to update, %d unchanged, %d to remove",
+        len(plan.added), len(plan.updated), len(plan.skipped), len(plan.removed),
+    )
+
+    stats = apply_plan(client, store_id, plan)
+    log.info(
+        "embedded %d chunks from %d uploaded files (added %d, updated %d, skipped %d, removed %d, failed %d)",
+        stats.chunks_embedded, stats.files_uploaded,
+        stats.added, stats.updated, stats.skipped, stats.removed, stats.failed,
+    )
+    return {"vector_store_id": store_id, **asdict(stats)}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -60,7 +86,8 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         stream=sys.stdout,
     )
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    for noisy in ("urllib3", "httpx2", "openai"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
 
     settings = Settings.from_env()
     try:
@@ -72,10 +99,11 @@ def main(argv: list[str] | None = None) -> int:
         log.exception("run failed")
         return 1
 
-    summary["status"] = "ok"
+    exit_code = 1 if summary.get("failed") else 0
+    summary["status"] = "ok" if exit_code == 0 else "partial"
     (OUTPUT_DIR / "last_run.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     log.info("summary %s", json.dumps(summary))
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":
