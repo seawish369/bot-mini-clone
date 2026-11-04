@@ -1,0 +1,14 @@
+{
+  "articles": [
+    {
+      "id": 360000002222,
+      "html_url": "https://support.optisigns.com/hc/en-us/articles/360000002222-Using-the-OptiSigns-API",
+      "title": "Using the \"OptiSigns\" API",
+      "updated_at": "2026-08-30T08:00:00Z",
+      "draft": false,
+      "body": "<table><tr><td><strong>NOTE</strong></td></tr><tr><td><p>You need an API key.</p></td></tr></table><p>Paste &lt;iframe src=\"x\"&gt; into your page.</p><pre><code class=\"language-json\">{<br>  \"query\": \"devices\"<br>}</code></pre><p><img src=\"data:image/png;base64,AAAA\" alt=\"qr\"></p><p>&nbsp;</p>"
+    }
+  ],
+  "next_page": null,
+  "count": 3
+}
