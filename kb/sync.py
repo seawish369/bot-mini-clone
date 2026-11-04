@@ -67,10 +67,17 @@ def plan_sync(local: list[Document], remote: dict[int, RemoteArticle], complete_
     return plan
 
 
-def find_or_create_store(client: OpenAI, name: str) -> str:
+def find_store(client: OpenAI, name: str) -> str | None:
     for store in client.vector_stores.list(limit=PAGE_SIZE):
         if store.name == name:
             return store.id
+    return None
+
+
+def find_or_create_store(client: OpenAI, name: str) -> str:
+    store_id = find_store(client, name)
+    if store_id:
+        return store_id
     store = client.vector_stores.create(name=name, chunking_strategy=CHUNKING_STRATEGY)
     log.info("created vector store %s (%s)", name, store.id)
     return store.id

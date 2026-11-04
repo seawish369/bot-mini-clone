@@ -13,6 +13,7 @@ class FakeOpenAI:
         self.ids = itertools.count(1)
         self.files = FakeFiles(self)
         self.vector_stores = FakeVectorStores(self)
+        self.responses = FakeResponses()
 
     def next_id(self, prefix: str) -> str:
         with self.lock:
@@ -63,3 +64,12 @@ class FakeVectorStoreFiles:
 
     def delete(self, file_id, vector_store_id):
         self.client.items.pop(file_id)
+
+
+class FakeResponses:
+    def __init__(self):
+        self.calls: list[dict] = []
+
+    def create(self, **kwargs):
+        self.calls.append(kwargs)
+        return SimpleNamespace(output_text="- Add the YouTube app.\n\nArticle URL: https://support.optisigns.com/hc/en-us/articles/1-x")
