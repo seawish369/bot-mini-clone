@@ -48,7 +48,7 @@ jobs:
 
       - name: Keep the last run as an artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: last-run
           path: out/last_run.json
