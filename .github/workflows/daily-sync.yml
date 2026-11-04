@@ -1,0 +1,56 @@
+name: Daily sync
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the image
+        run: docker build -t bot-mini-clone .
+
+      - name: Run the sync
+        env:
+          API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p out && chmod 777 out
+          docker run --rm -e API_KEY -v "$PWD/out:/app/articles" bot-mini-clone main.py
+
+      - name: Publish the run summary
+        if: always()
+        run: |
+          if [ ! -f out/last_run.json ]; then
+            echo "No run summary: the job failed before finishing. See the step log above." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          jq -r '
+            "## Daily sync: \(.status)",
+            "",
+            "| Added | Updated | Skipped | Removed | Files uploaded | Chunks embedded | Failed | Articles scraped | Duration |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            "| \(.added) | \(.updated) | \(.skipped) | \(.removed) | \(.files_uploaded) | \(.chunks_embedded) | \(.failed) | \(.articles_scraped) | \(.duration_s)s |",
+            "",
+            "Vector store: `\(.vector_store_id)` · started \(.started_at)"
+          ' out/last_run.json >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the last run as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-run
+          path: out/last_run.json
+          if-no-files-found: ignore
+          retention-days: 30
