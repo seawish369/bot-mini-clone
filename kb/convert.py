@@ -30,7 +30,7 @@ def html_to_markdown(html: str) -> str:
         newline_style="backslash",
         code_language_callback=code_language,
     )
-    markdown = converter.convert_soup(soup)
+    markdown = converter.convert_soup(soup) + "\n"
 
     markdown = markdown.replace("\u00a0", " ")
     markdown = re.sub(r"[ \t]+\n", "\n", markdown)
