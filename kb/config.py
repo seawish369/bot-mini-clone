@@ -21,6 +21,6 @@ class Settings:
     def from_env(cls) -> "Settings":
         load_dotenv() 
         return cls(
-            api_key=(os.getenv("API_KEY")).strip(),
+            api_key=(os.getenv("API_KEY") or "").strip(),
             vector_store_name=os.getenv("VECTOR_STORE_NAME") or DEFAULT_VECTOR_STORE_NAME,
         )
