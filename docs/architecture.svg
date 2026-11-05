@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 638" width="1200" height="638" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 784" width="1200" height="784" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="#57606a"/>
@@ -21,12 +21,43 @@
     </style>
   </defs>
 
-  <rect width="1200" height="638" fill="#ffffff"/>
+  <rect width="1200" height="784" fill="#ffffff"/>
   <text x="40" y="34" font-size="18" font-weight="700" fill="#1f2328">bot-mini-clone · architecture</text>
 
-  <g transform="translate(0 -146)">
+  <rect class="lane" x="20" y="52" width="1160" height="124" rx="10"/>
+  <text class="lane-label" x="40" y="76">DAILY JOB · GITHUB ACTIONS</text>
+
+  <rect class="box" x="40" y="90" width="240" height="66" rx="8"/>
+  <text class="title" x="56" y="114">Schedule</text>
+  <text class="text" x="56" y="134">cron 17 2 * * *  (02:17 UTC)</text>
+  <text class="text" x="56" y="149">or "Run workflow" by hand</text>
+
+  <rect class="box" x="333" y="90" width="240" height="66" rx="8"/>
+  <text class="title" x="349" y="114">docker build</text>
+  <text class="text" x="349" y="134">builds the image from</text>
+  <text class="text" x="349" y="149">the repo's Dockerfile</text>
+
+  <rect class="box" x="626" y="90" width="240" height="66" rx="8"/>
+  <text class="title" x="642" y="114">docker run … main.py</text>
+  <text class="text" x="642" y="134">API_KEY from the</text>
+  <text class="text" x="642" y="149">OPENAI_API_KEY secret</text>
+
+  <rect class="box" x="920" y="90" width="240" height="66" rx="8"/>
+  <text class="title" x="936" y="114">Run summary</text>
+  <text class="text" x="936" y="134">table on the run page</text>
+  <text class="text" x="936" y="149">+ last_run.json artifact</text>
+
+  <path class="edge" d="M280 123 H331"/>
+  <path class="edge" d="M573 123 H624"/>
+  <path class="edge" d="M866 123 H918"/>
+
   <rect class="lane" x="20" y="198" width="1160" height="356" rx="10"/>
   <text class="lane-label" x="40" y="222">SYNC RUN · main.py</text>
+
+  <path class="edge" d="M746 156 V236"/>
+  <text class="edge-label" x="754" y="190">runs</text>
+  <path class="edge" d="M1040 236 V158"/>
+  <text class="edge-label" x="1048" y="190">last_run.json</text>
 
   <rect class="box external" x="40" y="238" width="200" height="104" rx="8"/>
   <circle class="badge" cx="58" cy="258" r="10"/><text class="badge-text" x="58" y="262">1</text>
@@ -124,5 +155,4 @@
 
   <path class="edge" d="M300 688 H358"/>
   <path class="edge" d="M1000 688 H1038"/>
-  </g>
 </svg>

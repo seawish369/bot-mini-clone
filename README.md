@@ -25,7 +25,7 @@ pytest                                   # 74 tests, offline, against a fake Zen
 
 ## How it works
 
-![Architecture: sync run and answering](docs/architecture.svg)
+![Architecture: daily job, sync run and answering](docs/architecture.svg)
 
 - **Scrape** ([`kb/scraper.py`](kb/scraper.py), [`kb/convert.py`](kb/convert.py)). The Zendesk Help Center API (`/api/v2/help_center/en-us/articles.json`, 100 per page, `next_page` followed, drafts skipped, retries on 429/5xx) returns each article body without site chrome. It becomes Markdown with headings, lists, tables, images, fenced code (with its language) and links; relative links stay relative. Embedded videos become links, Zendesk TIP/NOTE tables become blockquotes, HTML shown as text is escaped, and base64 images, empty blocks and vote/share widgets are dropped. Each file, `articles/<article-id>-<slug>.md`, starts with front matter, `# Title` and an `Article URL:` line.
 - **Chunking** ([`kb/chunker.py`](kb/chunker.py)). Articles are split at `##`–`####` headings and packed into chunks of at most 2,400 characters (438 tokens on average, 1,129 at most in the current data): one topic per chunk, never splitting a code block; oversized lists and tables split between lines. Every chunk repeats the title and `Article URL:`, so any retrieved chunk can be cited. Each chunk is uploaded as its own file with a static strategy of 4,096 tokens (the maximum), more than 2,400 characters can take even at one character per token, so **one file is exactly one embedded chunk** and the logged chunk count is exact.
