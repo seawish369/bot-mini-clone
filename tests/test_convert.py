@@ -1,4 +1,63 @@
-from kb.convert import html_to_markdown
+import pytest
+
+from kb.convert import DROP_CLASS_HINTS, DROP_TAGS, html_to_markdown
+
+CHROME_HTML = {
+    "script": "<script>track('Drop me')</script>",
+    "style": "<style>.drop-me { color: red }</style>",
+    "noscript": "<noscript>Drop me</noscript>",
+    "form": "<form><label>Drop me</label></form>",
+    "button": "<button>Drop me</button>",
+    "input": '<input value="Drop me">',
+    "select": "<select><option>Drop me</option></select>",
+    "nav": '<nav><a href="/hc/en-us">Drop me</a></nav>',
+    "header": "<header>Drop me</header>",
+    "footer": "<footer>Drop me</footer>",
+    "aside": "<aside>Drop me</aside>",
+}
+
+CHROME_CLASSES = {
+    "breadcrumb": "breadcrumbs",
+    "article-votes": "article-votes",
+    "article-share": "article-share",
+    "related-articles": "related-articles",
+    "advert": "Advertisement",
+    "ads-": "ads-banner",
+    "cookie": "cookie-consent",
+}
+
+
+def test_every_dropped_tag_and_class_hint_has_a_case():
+    assert set(CHROME_HTML) == set(DROP_TAGS)
+    assert set(CHROME_CLASSES) == set(DROP_CLASS_HINTS)
+
+
+@pytest.mark.parametrize("tag", DROP_TAGS)
+def test_page_chrome_tags_are_dropped(tag):
+    md = html_to_markdown(f"<p>Keep me</p>{CHROME_HTML[tag]}<p>Keep me too</p>")
+
+    assert md == "Keep me\n\nKeep me too\n"
+
+
+@pytest.mark.parametrize("hint", DROP_CLASS_HINTS)
+def test_widgets_are_dropped_by_class(hint):
+    md = html_to_markdown(f'<p>Keep me</p><div class="widget {CHROME_CLASSES[hint]}"><p>Drop me</p></div>')
+
+    assert md == "Keep me\n"
+
+
+def test_nested_widgets_are_dropped():
+    md = html_to_markdown(
+        '<div class="article-share"><div class="cookie-banner"><button>Drop me</button></div></div><p>Keep me</p>'
+    )
+
+    assert md == "Keep me\n"
+
+
+def test_content_that_mentions_chrome_words_is_kept():
+    md = html_to_markdown('<p class="wysiwyg-text-align-left">Clear your cookies, then open the header and footer settings.</p>')
+
+    assert md == "Clear your cookies, then open the header and footer settings.\n"
 
 
 def test_keeps_structure_and_drops_page_chrome():

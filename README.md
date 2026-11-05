@@ -20,7 +20,7 @@ cp .env.sample .env                      # set API_KEY (OpenAI)
 python main.py --scrape-only             # Markdown into ./articles
 python main.py                           # scrape + sync the delta (--limit N for a quick partial run)
 python ask.py "How do I add a YouTube video?"
-pytest                                   # 53 tests, offline, against a fake Zendesk API and an in-memory OpenAI client
+pytest                                   # 74 tests, offline, against a fake Zendesk API and an in-memory OpenAI client
 ```
 
 ## How it works
