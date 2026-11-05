@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 638" width="1200" height="638" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#57606a"/>
+    </marker>
+    <style>
+      .lane { fill: #f6f8fa; stroke: #d8dee4; }
+      .lane-label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; fill: #57606a; }
+      .box { fill: #ffffff; stroke: #c4ccd5; stroke-width: 1.2; }
+      .external { fill: #fff6ec; stroke: #e8a868; }
+      .openai { fill: #eef5ff; stroke: #6f9fd8; }
+      .output { fill: #ffffff; stroke: #8c959f; stroke-dasharray: 5 4; }
+      .title { font-size: 14px; font-weight: 700; fill: #1f2328; }
+      .text { font-size: 12px; fill: #424a53; }
+      .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; fill: #424a53; }
+      .badge { fill: #1f6feb; }
+      .badge-text { font-size: 12px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+      .edge { stroke: #57606a; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .edge-both { stroke: #57606a; stroke-width: 1.5; fill: none; marker-start: url(#arrow); marker-end: url(#arrow); }
+      .edge-label { font-size: 11px; fill: #57606a; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="638" fill="#ffffff"/>
+  <text x="40" y="34" font-size="18" font-weight="700" fill="#1f2328">bot-mini-clone · architecture</text>
+
+  <g transform="translate(0 -146)">
+  <rect class="lane" x="20" y="198" width="1160" height="356" rx="10"/>
+  <text class="lane-label" x="40" y="222">SYNC RUN · main.py</text>
+
+  <rect class="box external" x="40" y="238" width="200" height="104" rx="8"/>
+  <circle class="badge" cx="58" cy="258" r="10"/><text class="badge-text" x="58" y="262">1</text>
+  <text class="title" x="76" y="263">Zendesk API</text>
+  <text class="code" x="56" y="288">/api/v2/help_center/</text>
+  <text class="code" x="56" y="304">en-us/articles.json</text>
+  <text class="text" x="56" y="322">public, no key needed</text>
+
+  <rect class="box" x="270" y="238" width="200" height="104" rx="8"/>
+  <circle class="badge" cx="288" cy="258" r="10"/><text class="badge-text" x="288" y="262">2</text>
+  <text class="title" x="306" y="263">kb/scraper.py</text>
+  <text class="text" x="286" y="288">100 per page, next_page</text>
+  <text class="text" x="286" y="305">skips drafts</text>
+  <text class="text" x="286" y="322">retries 429 and 5xx</text>
+
+  <rect class="box" x="500" y="238" width="200" height="104" rx="8"/>
+  <circle class="badge" cx="518" cy="258" r="10"/><text class="badge-text" x="518" y="262">3</text>
+  <text class="title" x="536" y="263">kb/convert.py</text>
+  <text class="text" x="516" y="288">HTML → clean Markdown</text>
+  <text class="text" x="516" y="305">drops nav, widgets, scripts</text>
+  <text class="text" x="516" y="322">videos → links, TIP → quote</text>
+
+  <rect class="box" x="730" y="238" width="200" height="104" rx="8"/>
+  <circle class="badge" cx="748" cy="258" r="10"/><text class="badge-text" x="748" y="262">4</text>
+  <text class="title" x="766" y="263">kb/document.py</text>
+  <text class="text" x="746" y="288">front matter, # Title,</text>
+  <text class="text" x="746" y="305">Article URL:, slug</text>
+  <text class="text" x="746" y="322">content hash (sha256)</text>
+
+  <rect class="box output" x="960" y="238" width="200" height="104" rx="8"/>
+  <text class="title" x="976" y="263">articles/*.md</text>
+  <text class="text" x="976" y="288">Markdown snapshot,</text>
+  <text class="text" x="976" y="305">one file per article,</text>
+  <text class="text" x="976" y="322">kept in the repo</text>
+
+  <path class="edge" d="M240 290 H268"/>
+  <path class="edge" d="M470 290 H498"/>
+  <path class="edge" d="M700 290 H728"/>
+  <path class="edge" d="M930 290 H958"/>
+  <path class="edge" d="M830 342 V380 H170 V416"/>
+
+  <rect class="box" x="40" y="418" width="260" height="116" rx="8"/>
+  <circle class="badge" cx="58" cy="438" r="10"/><text class="badge-text" x="58" y="442">5</text>
+  <text class="title" x="76" y="443">kb/chunker.py</text>
+  <text class="text" x="56" y="468">splits at ## to #### headings</text>
+  <text class="text" x="56" y="485">at most 2,400 chars per chunk</text>
+  <text class="text" x="56" y="502">code blocks never split</text>
+  <text class="text" x="56" y="519">title + Article URL in every chunk</text>
+
+  <rect class="box" x="360" y="418" width="360" height="116" rx="8"/>
+  <circle class="badge" cx="378" cy="438" r="10"/><text class="badge-text" x="378" y="442">6</text>
+  <text class="title" x="396" y="443">kb/sync.py</text>
+  <text class="text" x="376" y="468">compares each article's hash with the store</text>
+  <text class="text" x="376" y="485">→ added · updated · skipped · removed</text>
+  <text class="text" x="376" y="502">uploads new chunks first (8 in parallel),</text>
+  <text class="text" x="376" y="519">then deletes the old ones</text>
+
+  <rect class="box openai" x="820" y="418" width="340" height="116" rx="8"/>
+  <circle class="badge" cx="838" cy="438" r="10"/><text class="badge-text" x="838" y="442">7</text>
+  <text class="title" x="856" y="443">OpenAI vector store</text>
+  <text class="code" x="836" y="468">optibot-help-center</text>
+  <text class="text" x="836" y="485">1 file = 1 chunk (static, 4,096 tokens)</text>
+  <text class="text" x="836" y="502">attributes: article_id, content_hash,</text>
+  <text class="text" x="836" y="519">part / parts, url, title</text>
+
+  <path class="edge" d="M300 476 H358"/>
+  <path class="edge" d="M720 458 H818"/>
+  <text class="edge-label" x="742" y="450">upload</text>
+  <path class="edge" d="M820 496 H722"/>
+  <text class="edge-label" x="736" y="514">read state</text>
+
+  <rect class="lane" x="20" y="578" width="1160" height="186" rx="10"/>
+  <text class="lane-label" x="40" y="602">ANSWER · ask.py OR THE OPENAI PLAYGROUND</text>
+
+  <path class="edge-both" d="M960 536 V636"/>
+  <text class="edge-label" x="970" y="570">file_search</text>
+  <text class="edge-label" x="970" y="585">top 5 chunks</text>
+
+  <rect class="box" x="40" y="638" width="260" height="100" rx="8"/>
+  <text class="title" x="56" y="663">Question</text>
+  <text class="text" x="56" y="688">"How do I add a</text>
+  <text class="text" x="56" y="705">YouTube video?"</text>
+
+  <rect class="box openai" x="360" y="638" width="640" height="100" rx="8"/>
+  <text class="title" x="376" y="663">Responses API + file_search tool</text>
+  <text class="text" x="376" y="688">model gpt-5-mini, instructions = assistant/system_prompt.md</text>
+  <text class="text" x="376" y="705">searches the vector store and answers only from the chunks it finds</text>
+  <text class="text" x="376" y="722">(the Assistants API was retired on 26 Aug 2026)</text>
+
+  <rect class="box" x="1040" y="638" width="120" height="100" rx="8"/>
+  <text class="title" x="1056" y="663">Answer</text>
+  <text class="text" x="1056" y="688">≤ 5 bullets</text>
+  <text class="text" x="1056" y="705">cites up to 3</text>
+  <text class="text" x="1056" y="722">Article URLs</text>
+
+  <path class="edge" d="M300 688 H358"/>
+  <path class="edge" d="M1000 688 H1038"/>
+  </g>
+</svg>

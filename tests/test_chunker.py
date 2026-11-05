@@ -81,4 +81,4 @@ def test_store_chunks_are_larger_than_ours_so_one_file_is_one_chunk():
     static = CHUNKING_STRATEGY["static"]
 
     assert static["chunk_overlap_tokens"] == 0
-    assert static["max_chunk_size_tokens"] * 1.5 >= MAX_CHARS
+    assert MAX_CHARS <= static["max_chunk_size_tokens"] <= 4096
